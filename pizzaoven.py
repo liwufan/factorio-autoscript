@@ -4,6 +4,7 @@ import zlib
 import base64
 import math
 
+prodlevel = 9
 def normaltemp():
     original_bp_string = '0eNqdk9uKhDAMQP8lz3VAx2t/ZVkWL0ECvVHrsjL471udUYYdB1efJJicnKbNDSrRo7GkHPAbdKo0gdNBa6mZ4h/gKYMBeDYyoFqrDviHT6NWlWJKcINB4EAOJTBQpZwiFFg7S3UgSZFqg8aSEDARVIMeGY6fDFA5coR34BwMX6qXFVqfsINiYHTnq7V6SIaXZNaMLolv05D1VfPfeGQv9OgoPX7Qw//Qryu996e1rdX+G1Qo3Hvw9S/YKy6TVaZ3sNEnXvtIbKiXwXoYowW+9kqeem3gkgPaxb627t0b7/Ts3abb4tkB8QUVn5h3fvbVJNvexQHvdN97GbjfrHkZ+dNiM/hG290L8jDOiiiL87yIwmwcfwH4BlKu'
     bp_json = json.loads(zlib.decompress(base64.b64decode(original_bp_string[1:])).decode('utf8'))
@@ -55,10 +56,12 @@ def extendminer():
         print('0' + base64.b64encode(zlib.compress(bytes(json.dumps(outjson), 'utf8'))).decode('utf8'))
 # extendminer()
 def banboomaker(length,type):
+    bottleneck = 900 / 30 / (1+prodlevel/10)/2
     outentity = []
     outitem = ''
-    slimit = 75
+    # slimit = 75
     for i in range(length):
+
         # print(i)
         setnum = 9
         stepgauge = 6
@@ -68,9 +71,9 @@ def banboomaker(length,type):
                 outitem['entity_number'] = item['entity_number'] + i*setnum
                 outitem['position']['x'] = item['position']['x'] + i*stepgauge
 
-                if outitem["name"] == "underground-belt" and i//12:
+                if outitem["name"] == "underground-belt" and i/bottleneck >=1:
                     outitem["name"] = 'fast-underground-belt'
-                    if i//25:
+                    if i/bottleneck >=2:
                         outitem["name"] ='express-underground-belt'
                 outentity.append(outitem)
         else:
@@ -79,9 +82,9 @@ def banboomaker(length,type):
                 outitem['entity_number'] = item['entity_number'] + i*setnum
                 outitem['position']['x'] = item['position']['x'] + i*stepgauge
 
-                if outitem["name"] == "underground-belt" and i//12:
+                if outitem["name"] == "underground-belt" and i/bottleneck >=1:
                     outitem["name"] = 'fast-underground-belt'
-                    if i//25:
+                    if i/bottleneck >=2:
                         outitem["name"] ='express-underground-belt'
                 outentity.append(outitem)
     outjson = bp()
@@ -123,10 +126,30 @@ def pizza(dlist,lanes,gauge,step):
                 line['entity_number'] = temporder
                 temporder +=1
                 roundminer.append(line)
+    
+    cablepole(roundminer)
+    
 
     return roundminer
 
-
+def cablepole(entities):
+    polelist = []
+    for entity in entities:
+        if entity['name'] == 'medium-electric-pole':
+            polelist.append(entity)
+    for spole in polelist:
+        for tpole in polelist:
+            if spole['entity_number']!=tpole['entity_number']:
+                # print(spole['position']['x']-tpole['position']['x'])
+                a = (spole['position']['x']-tpole['position']['x'])*(spole['position']['x']-tpole['position']['x'])
+                b = (spole['position']['y']-tpole['position']['y'])*(spole['position']['y']-tpole['position']['y'])
+                c = math.sqrt(a+b)
+                if c <9:
+                    spole['neighbours']= [tpole['entity_number']]
+        for et in entities:
+            if et['entity_number'] == spole['entity_number']:
+                et = spole
+    return entities
 def jsonwriter(entities):
     output = bp()
     output['blueprint']['entities'] = entities
@@ -211,7 +234,7 @@ def manager(prodction):
 
     # print(prodction)
 
-manager(2)
+manager(prodlevel)
 # with open('flip.json','w') as file:
 #     json.dump(fliptemp(),file)
 # print(normaltemp,fliptemp)

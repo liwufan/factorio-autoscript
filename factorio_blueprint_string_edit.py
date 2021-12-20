@@ -4,7 +4,7 @@ import zlib
 import base64
 import math
 
-original_bp_string = '0eNqFj80KgzAQhN9lzlGqaNW8SinFn6UsJKsksVQk715jL731OMvMN7M7BrPS4lgC9A4eZ/HQtx2en9KbdAvbQtDgQBYK0tukyNAYHI+ZZWF5ZpNjYxAVWCZ6QxfxrkASODB9gafYHrLagdxh+INSWGZ/pGdJGw5i2eW1wgad1ZdrXsdUcG7SPy8ovMj5M1S2RdV0ZVO1bVcWTYwfGn9Nnw=='
+original_bp_string = '0eNrVktGqgzAMht8l13WcVofaVxki6sJOmE2lVpkM3/1Yx8HBxi62q13mb/L/yUevULcDdo7Yl7W1Z9DXTelBH+7K8EaN5Zvc04mrNmh+6hA0kEcDArgyoTJ4pMFE2GLjHTVRZ1uEWQDxES+g5VwIQPbkCW9+azGVPJga3dLw2klAZ/tl2HLYIBgm8W4vYAIdyTjd7ZcoRjr91nZwIUAVs3gIUZ+ExI8hsghnrSD0HTcBI7p+tVGZTNJcpUmW5UqmG5CfsN6XoFbZRiFfKLx9tHw2Ga3/UEDVeBqx/Ofzwm/+A0mG6WE='
 bp_json = json.loads(zlib.decompress(base64.b64decode(original_bp_string[1:])).decode('utf8'))
 print(bp_json)
 # for mine in normaltemp():
@@ -18,6 +18,63 @@ print(bp_json)
 # bp_json['blueprint']['entities'][0]['items'] = {'copper-plate': 200} # overwrites existing item request
 # bp_json['blueprint']['entities'][0]['recipe'] = 'copper-cable' # creates new key/value pair
 
-
-# changed_bp_string = '0' + base64.b64encode(zlib.compress(bytes(json.dumps(bp_json), 'utf8'))).decode('utf8')
-# print(changed_bp_string)
+test = {
+    'blueprint_book': {
+        'blueprints': [{
+            'blueprint': {
+                'icons': [{
+                    'signal': {
+                        'type': 'item',
+                        'name': 'medium-electric-pole'
+                    },
+                    'index': 1
+                }],
+                'entities': [{
+                    'entity_number': 1,
+                    'name': 'medium-electric-pole',
+                    'position': {
+                        'x': 143.5,
+                        'y': -137.5
+                    }
+                }, {
+                    'entity_number': 2,
+                    'name': 'medium-electric-pole',
+                    'position': {
+                        'x': 143.5,
+                        'y': -133.5
+                    },
+                    'neighbours': [1]
+                }],
+                'item': 'blueprint',
+                'version': 281479274889217
+            },
+            'index': 0
+        }, {
+            'blueprint': {
+                'icons': [{
+                    'signal': {
+                        'type': 'item',
+                        'name': 'medium-electric-pole'
+                    },
+                    'index': 1
+                }],
+                'entities': [{
+                    'entity_number': 1,
+                    'name': 'medium-electric-pole',
+                    'position': {
+                        'x': 128.5,
+                        'y': -139.5
+                    }
+                }],
+                'item': 'blueprint',
+                'version': 281479274889217
+            },
+            'index': 1
+        }],
+        'item': 'blueprint-book',
+        'active_index': 0,
+        'version': 281479274889217
+    }
+}
+changed_bp_string = '0' + base64.b64encode(zlib.compress(bytes(json.dumps(test), 'utf8'))).decode('utf8')
+print(changed_bp_string)
