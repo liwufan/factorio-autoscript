@@ -5,7 +5,8 @@ import base64
 import math
 
 original_bp_string = '0eNrVktGqgzAMht8l13WcVofaVxki6sJOmE2lVpkM3/1Yx8HBxi62q13mb/L/yUevULcDdo7Yl7W1Z9DXTelBH+7K8EaN5Zvc04mrNmh+6hA0kEcDArgyoTJ4pMFE2GLjHTVRZ1uEWQDxES+g5VwIQPbkCW9+azGVPJga3dLw2klAZ/tl2HLYIBgm8W4vYAIdyTjd7ZcoRjr91nZwIUAVs3gIUZ+ExI8hsghnrSD0HTcBI7p+tVGZTNJcpUmW5UqmG5CfsN6XoFbZRiFfKLx9tHw2Ga3/UEDVeBqx/Ofzwm/+A0mG6WE='
-bp_json = json.loads(zlib.decompress(base64.b64decode(original_bp_string[1:])).decode('utf8'))
+bp_json = json.loads(
+    zlib.decompress(base64.b64decode(original_bp_string[1:])).decode('utf8'))
 print(bp_json)
 # for mine in normaltemp():
 #     if mine['name'] == 'electric-mining-drill':
@@ -76,5 +77,6 @@ test = {
         'version': 281479274889217
     }
 }
-changed_bp_string = '0' + base64.b64encode(zlib.compress(bytes(json.dumps(test), 'utf8'))).decode('utf8')
+changed_bp_string = '0' + base64.b64encode(
+    zlib.compress(bytes(json.dumps(test), 'utf8'))).decode('utf8')
 print(changed_bp_string)
