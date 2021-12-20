@@ -30,3 +30,4 @@ for i in range(2,888,2):
             epmn += int((numberofminer//tilegroup+1)*tilegroup) * 4
         print(epmn,area/10.5)
 
+print('max rad is ',maxrad)
