@@ -1,13 +1,16 @@
+#!/usr/bin/env python3
+
 import json
 from os import name, read
 import zlib
 import base64
 import math
 import pizzareci
+import copy
 
 prodlevel = 9
 menu = pizzareci.pizzamenu()
-preferrecipe = 'basic'
+preferrecipe = 'lightning'
 
 def bp():
     original_bp_string = '0eNqdk9uKhDAMQP8lz3VAx2t/ZVkWL0ECvVHrsjL471udUYYdB1efJJicnKbNDSrRo7GkHPAbdKo0gdNBa6mZ4h/gKYMBeDYyoFqrDviHT6NWlWJKcINB4EAOJTBQpZwiFFg7S3UgSZFqg8aSEDARVIMeGY6fDFA5coR34BwMX6qXFVqfsINiYHTnq7V6SIaXZNaMLolv05D1VfPfeGQv9OgoPX7Qw//Qryu996e1rdX+G1Qo3Hvw9S/YKy6TVaZ3sNEnXvtIbKiXwXoYowW+9kqeem3gkgPaxb627t0b7/Ts3abb4tkB8QUVn5h3fvbVJNvexQHvdN97GbjfrHkZ+dNiM/hG290L8jDOiiiL87yIwmwcfwH4BlKu'
@@ -18,7 +21,7 @@ def bp():
     return bp_json
 
 def bamboomaker(length, type):
-    bottleneck = 900 / 30 / (1 + prodlevel / 10) / 2
+    bottleneck = 900 / 30 / (1 + prodlevel / 10) / (4/menu.recipe[preferrecipe]['desity'])
     outentity = []
     outitem = ''
     # slimit = 75
@@ -26,37 +29,52 @@ def bamboomaker(length, type):
     
 
     for i in range(length):
-        menul = pizzareci.pizzamenu()
+        menul = copy.deepcopy(pizzareci.pizzamenu())
 
-        # print(i)
-        setnum = 9
-        stepgauge = 6
+        setnum = menul.recipe[preferrecipe]['items']
+        stepgauge = menul.recipe[preferrecipe]['step']
         if length % 2:
             for item in menul.recipe[preferrecipe]['positive']:
-                outitem = item
+                outitem = copy.deepcopy(item)
                 outitem['entity_number'] = item['entity_number'] + i * setnum
                 outitem['position']['x'] = item['position']['x'] + i * stepgauge
 
-                if outitem["name"] == "underground-belt" and i / bottleneck >= 1:
-                    outitem["name"] = 'fast-underground-belt'
-                    if i / bottleneck >= 2:
+                if i / bottleneck >= 1:
+                    if outitem["name"] == "underground-belt" :
+                        outitem["name"] = 'fast-underground-belt'
+                    if outitem["name"] == "transport-belt" :
+                        outitem["name"] = 'fast-transport-belt'
+
+                if i / bottleneck >= 2:
+                    if outitem["name"] == "fast-transport-belt" :
+                        outitem["name"] = 'express-transport-belt'
+                    if outitem["name"] == "fast-underground-belt" :
                         outitem["name"] = 'express-underground-belt'
+
                 outentity.append(outitem)
         else:
             for item in menul.recipe[preferrecipe]['negative']:
-                outitem = item
+                outitem = copy.deepcopy(item)
                 outitem['entity_number'] = item['entity_number'] + i * setnum
                 outitem['position']['x'] = item['position']['x'] + i * stepgauge
 
-                if outitem["name"] == "underground-belt" and i / bottleneck >= 1:
-                    outitem["name"] = 'fast-underground-belt'
-                    if i / bottleneck >= 2:
+                if i / bottleneck >= 1:
+                    if outitem["name"] == "underground-belt" :
+                        outitem["name"] = 'fast-underground-belt'
+                    if outitem["name"] == "transport-belt" :
+                        outitem["name"] = 'fast-transport-belt'
+
+                if i / bottleneck >= 2:
+                    if outitem["name"] == "fast-transport-belt" :
+                        outitem["name"] = 'express-transport-belt'
+                    if outitem["name"] == "fast-underground-belt" :
                         outitem["name"] = 'express-underground-belt'
+
                 outentity.append(outitem)
         menul = 0
     outjson = bp()
     outjson['blueprint']['entities'] = outentity
-    print(outentity)
+    # print(outentity)
 
     return outentity
 
@@ -81,7 +99,7 @@ def pizza(dlist, lanes, gauge, step):
             for line in nline:
                 line['entity_number'] = temporder
                 temporder += 1
-                roundminer.append(line)
+                roundminer.append(copy.deepcopy(line))
             if diorder > 0:
                 bline = coodshifter(bamboomaker(dlist[diorder], 'n'),
                                     (dlist[0] - dlist[diorder]) * step / 2,
@@ -89,7 +107,7 @@ def pizza(dlist, lanes, gauge, step):
                 for line in bline:
                     line['entity_number'] = temporder
                     temporder += 1
-                    roundminer.append(line)
+                    roundminer.append(copy.deepcopy(line))
         else:
             nline = coodshifter(bamboomaker(dlist[diorder], 'n'),
                                 (dlist[0] - dlist[diorder]) * step / 2,
@@ -97,14 +115,14 @@ def pizza(dlist, lanes, gauge, step):
             for line in nline:
                 line['entity_number'] = temporder
                 temporder += 1
-                roundminer.append(line)
+                roundminer.append(copy.deepcopy(line))
             bvert = 0 - (diorder + 1) * gauge
             bline = coodshifter(bamboomaker(dlist[diorder], 'n'),
                                 (dlist[0] - dlist[diorder]) * step / 2, bvert)
             for line in bline:
                 line['entity_number'] = temporder
                 temporder += 1
-                roundminer.append(line)
+                roundminer.append(copy.deepcopy(line))
 
     cablepole(roundminer)
 
@@ -204,7 +222,7 @@ def manager(prodction):
             'version': 281479274889217
         }
     }
-    maxminer = 2700 / 30 / (1 + prodction / 10) / 2
+    maxminer = 2700 / 30 / (1 + prodction / 10) / 2 * menu.recipe[preferrecipe]['desity']
     maxrad = maxminer * 3  #charistic of the blueprint
     repeat = 5
 
